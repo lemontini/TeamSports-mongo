@@ -2,9 +2,9 @@ package com.montini.teamsportsmongo.controller;
 
 import com.montini.teamsportsmongo.model.Player;
 import com.montini.teamsportsmongo.repository.PlayerRepository;
+import org.bson.types.ObjectId;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,5 +64,11 @@ public class PlayerController {
             return null;
         }
         return player.get().getEvents();
+    }
+
+    // find player by name
+    @GetMapping(value = "/read", params = {"name"})
+    public List<Player> getPlayerByName(@RequestParam("name") String name) {
+        return playerRepository.findByName(name);
     }
 }

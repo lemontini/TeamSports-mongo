@@ -3,7 +3,6 @@ package com.montini.teamsportsmongo.controller;
 import com.montini.teamsportsmongo.model.Location;
 import com.montini.teamsportsmongo.model.Player;
 import com.montini.teamsportsmongo.repository.LocationRepository;
-import com.montini.teamsportsmongo.repository.PlayerRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -67,4 +66,11 @@ public class LocationController {
         }
         return location.get().getEvents();
     }
+
+    // find location by name
+    @GetMapping(value = "/read", params = {"name"})
+    public List<Location> getLocationByName(@RequestParam("name") String name) {
+        return locationRepository.findByName(name);
+    }
+
 }
