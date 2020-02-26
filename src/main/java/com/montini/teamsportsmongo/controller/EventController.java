@@ -7,17 +7,12 @@ import com.montini.teamsportsmongo.model.Player;
 import com.montini.teamsportsmongo.repository.EventRepository;
 import com.montini.teamsportsmongo.repository.LocationRepository;
 import com.montini.teamsportsmongo.repository.PlayerRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +21,7 @@ import java.util.Optional;
 @RequestMapping("events/")
 public class EventController {
 
-    private static final Logger log = LogManager.getLogger(EventController.class);
+    private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
     private EventRepository eventRepository;
@@ -103,7 +98,7 @@ public class EventController {
 
         // check if the specified player already participates in the specified event
         if (player.getEvents().contains(eid) || event.getParticipants().contains(pid))
-            return "A player with ID " + pid + " is already in the list of participants of this event";
+            return "[" + player.getName() + "] is already in the list of participants of this event";
 
         player.attend(eid);
         event.addParticipant(pid);

@@ -27,6 +27,12 @@ public class Event {
     private ObjectId host;
     private List<ObjectId> participants = new ArrayList<>();
 
+    // TODO: implement the gameType
+    private enum EventType {
+        SINGLES,
+        DOUBLES
+    }
+
     public String addParticipant(ObjectId pid) {
         this.participants.add(pid);
         return "A player with ID " + pid + " was added to the event with ID " + this.id;
