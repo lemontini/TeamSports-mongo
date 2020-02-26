@@ -26,7 +26,7 @@ public class LocationController {
     @PostMapping("/create")
     public String saveLocation(@RequestBody Location location) {
         locationRepository.save(location);
-        return "Added a location with ID: " + location.getId();
+        return "Added a location [" + location.getName() + "]";
     }
 
     @GetMapping("/read")
@@ -34,34 +34,34 @@ public class LocationController {
         return locationRepository.findAll();
     }
 
-    @GetMapping("/read/{id}")
-    public Optional<Location> getLocation(@PathVariable ObjectId id) {
-        return locationRepository.findById(id);
+    @GetMapping("/read/{lid}")
+    public Optional<Location> getLocation(@PathVariable ObjectId lid) {
+        return locationRepository.findById(lid);
     }
 
-    @PostMapping("/update/{id}")
-    public String updateLocation(@RequestBody Location location, @PathVariable ObjectId id) {
-        if (!locationRepository.findById(id).isPresent()) return "A location with ID " + id + " does not exist";
-        location.setId(id);
+    @PostMapping("/update/{lid}")
+    public String updateLocation(@RequestBody Location location, @PathVariable ObjectId lid) {
+        if (!locationRepository.findById(lid).isPresent()) return "A location with ID " + lid + " does not exist";
+        location.setId(lid);
         locationRepository.save(location);
-        return "A location with ID " + id + " was updated";
+        return "A location [" + location.getName() + "] was updated";
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteLocation(@PathVariable ObjectId id) {
-        if (!locationRepository.findById(id).isPresent()) return "A location with ID " + id + " does not exist";
-        locationRepository.deleteById(id);
-        return "A location with ID " + id + " was deleted";
+    @DeleteMapping("/delete/{lid}")
+    public String deleteLocation(@PathVariable ObjectId lid) {
+        if (!locationRepository.findById(lid).isPresent()) return "A location with ID " + lid + " does not exist";
+        locationRepository.deleteById(lid);
+        return "A location with ID " + lid + " was deleted";
     }
 
     /* OTHER CONTROLLERS */
 
     // list all events in the the specified location
-    @GetMapping("/read/{id}/events")
-    public List<ObjectId> getEvents(@PathVariable ObjectId id) {
-        Optional<Location> location = locationRepository.findById(id);
+    @GetMapping("/read/{lid}/events")
+    public List<ObjectId> getEvents(@PathVariable ObjectId lid) {
+        Optional<Location> location = locationRepository.findById(lid);
         if (!location.isPresent()) {
-            log.info("Location with ID " + id + " does not exist");
+            log.info("Location with ID " + lid + " does not exist");
             return null;
         }
         return location.get().getEvents();

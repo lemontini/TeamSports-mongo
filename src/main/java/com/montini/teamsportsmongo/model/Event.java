@@ -22,9 +22,10 @@ public class Event {
     private ObjectId id;
     private String name;
     private ObjectId location;
-    private List<ObjectId> participants = new ArrayList<>();
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private ObjectId host;
+    private List<ObjectId> participants = new ArrayList<>();
 
     public String addParticipant(ObjectId pid) {
         this.participants.add(pid);

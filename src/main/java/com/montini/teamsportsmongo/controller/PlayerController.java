@@ -25,7 +25,7 @@ public class PlayerController {
     @PostMapping("/create")
     public String savePlayer(@RequestBody Player player) {
         playerRepository.save(player);
-        return "Added a player with ID: " + player.getId();
+        return "Added a player [" + player.getName() + "]";
     }
 
     @GetMapping("/read")
@@ -33,34 +33,34 @@ public class PlayerController {
         return playerRepository.findAll();
     }
 
-    @GetMapping("/read/{id}")
-    public Optional<Player> getPlayer(@PathVariable ObjectId id) {
-        return playerRepository.findById(id);
+    @GetMapping("/read/{pid}")
+    public Optional<Player> getPlayer(@PathVariable ObjectId pid) {
+        return playerRepository.findById(pid);
     }
 
-    @PostMapping("/update/{id}")
-    public String updatePlayer(@RequestBody Player player, @PathVariable ObjectId id) {
-        if (!playerRepository.findById(id).isPresent()) return "A player with ID " + id + " does not exist";
-        player.setId(id);
+    @PostMapping("/update/{pid}")
+    public String updatePlayer(@RequestBody Player player, @PathVariable ObjectId pid) {
+        if (!playerRepository.findById(pid).isPresent()) return "A player with ID " + pid + " does not exist";
+        player.setId(pid);
         playerRepository.save(player);
-        return "A player with ID " + id + " was updated";
+        return "A player [" + player.getName() + "] was updated";
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deletePlayer(@PathVariable ObjectId id) {
-        if (!playerRepository.findById(id).isPresent()) return "A player with ID " + id + " does not exist";
-        playerRepository.deleteById(id);
-        return "A player with ID " + id + " was deleted";
+    @DeleteMapping("/delete/{pid}")
+    public String deletePlayer(@PathVariable ObjectId pid) {
+        if (!playerRepository.findById(pid).isPresent()) return "A player with ID " + pid + " does not exist";
+        playerRepository.deleteById(pid);
+        return "A player with ID " + pid + " was deleted";
     }
 
     /* OTHER CONTROLLERS */
 
     // list all events the player is attending
-    @GetMapping("/read/{id}/events")
-    public List<ObjectId> getEvents(@PathVariable ObjectId id) { // public List<ObjectId> getEvents(@PathVariable ObjectId id) {
-        Optional<Player> player = playerRepository.findById(id);
+    @GetMapping("/read/{pid}/events")
+    public List<ObjectId> getEvents(@PathVariable ObjectId pid) {
+        Optional<Player> player = playerRepository.findById(pid);
         if (!player.isPresent()) {
-            log.info("Player with ID " + id + " does not exist");
+            log.info("Player with ID " + pid + " does not exist");
             return null;
         }
         return player.get().getEvents();

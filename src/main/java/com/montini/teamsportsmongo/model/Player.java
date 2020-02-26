@@ -27,6 +27,6 @@ public class Player {
         if (this.events.contains(eid))
             return "A player with ID " + this.id + " is already in the list of participants of this event";
         this.events.add(eid);
-        return "A player with ID " + this.id + " will participate in event with ID " + eid;
+        return "[" + this.name + "] will participate in event with ID " + eid;
     }
 }

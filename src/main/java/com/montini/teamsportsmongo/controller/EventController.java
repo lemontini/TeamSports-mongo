@@ -44,6 +44,15 @@ public class EventController {
         return "Added an event with ID: " + event.getId();
     }
 
+    // // host should not be set via REST API, this is only for debug purposes
+    // @GetMapping(value = "/update/{eid}",params = {"host"})
+    // public String setHost(@PathVariable ObjectId eid, @RequestParam(name = "host") ObjectId hid) {
+    //     Event event = eventRepository.findById(eid).get();
+    //     event.setHost(hid);
+    //     eventRepository.save(event);
+    //     return "";
+    // }
+
     // read all events
     @GetMapping("/read")
     public List<Event> getEvents() {
@@ -51,89 +60,89 @@ public class EventController {
     }
 
     // read a specific event
-    @GetMapping("/read/{id}")
-    public Optional<Event> getEvent(@PathVariable ObjectId id) {
-        return eventRepository.findById(id);
+    @GetMapping("/read/{eid}")
+    public Optional<Event> getEvent(@PathVariable ObjectId eid) {
+        return eventRepository.findById(eid);
     }
 
     // update a specific event
-    @PostMapping("/update/{id}")
-    public String updateEvent(@RequestBody Event event, @PathVariable ObjectId id) {
-        event.setId(id);
+    @PostMapping("/update/{eid}")
+    public String updateEvent(@RequestBody Event event, @PathVariable ObjectId eid) {
+        event.setId(eid);
         eventRepository.save(event);
-        return "An event with ID " + id + " was updated";
+        return "An event with ID " + eid + " was updated";
     }
 
     // delete a specific event
-    @DeleteMapping("/delete/{id}")
-    public String deleteEvent(@PathVariable ObjectId id) {
-        eventRepository.deleteById(id);
-        return "An event with ID " + id + " was deleted";
+    @DeleteMapping("/delete/{eid}")
+    public String deleteEvent(@PathVariable ObjectId eid) {
+        eventRepository.deleteById(eid);
+        return "An event with ID " + eid + " was deleted";
     }
 
     /* OTHER CONTROLLERS */
 
     // add new participant to the event
-    @GetMapping(value = "/update", params = {"eid", "pid"})
-    public String addParticipant(@RequestParam("eid") ObjectId eventId,
-                                 @RequestParam("pid") ObjectId playerId) {
+    @GetMapping(value = "/update/{eid}", params = {"pid"})
+    public String addParticipant(@PathVariable("eid") ObjectId eid,
+                                 @RequestParam("pid") ObjectId pid) {
         Player player;
         Event event;
 
         // check if the player exists
-        if (playerRepository.findById(playerId).isPresent()) {
-            player = playerRepository.findById(playerId).get();
+        if (playerRepository.findById(pid).isPresent()) {
+            player = playerRepository.findById(pid).get();
             log.info("PLAYER: " + player);
-        } else return "A player with ID " + playerId + " does not exist";
+        } else return "A player with ID " + pid + " does not exist";
 
         // check if the event exists
-        if (eventRepository.findById(eventId).isPresent()) {
-            event = eventRepository.findById(eventId).get();
+        if (eventRepository.findById(eid).isPresent()) {
+            event = eventRepository.findById(eid).get();
             log.info("EVENT: " + event);
-        } else return "An event with ID " + eventId + " does not exist";
+        } else return "An event with ID " + eid + " does not exist";
 
         // check if the specified player already participates in the specified event
-        if (player.getEvents().contains(eventId) || event.getParticipants().contains(playerId))
-            return "A player with ID " + playerId + " is already in the list of participants of this event";
+        if (player.getEvents().contains(eid) || event.getParticipants().contains(pid))
+            return "A player with ID " + pid + " is already in the list of participants of this event";
 
-        player.attend(eventId);
-        event.addParticipant(playerId);
+        player.attend(eid);
+        event.addParticipant(pid);
         playerRepository.save(player);
         eventRepository.save(event);
 
-        return "An event with ID " + eventId + " was updated";
+        return "[" + player.getName() + "] will attend the [" + event.getName() + "]";
     }
 
     // set the location of the event
-    @GetMapping(value = "/update", params = {"eid", "lid"})
-    public String addLocation(@RequestParam("eid") ObjectId eventId,
-                              @RequestParam("lid") ObjectId locationId) {
+    @GetMapping(value = "/update/{eid}", params = {"lid"})
+    public String addLocation(@PathVariable ObjectId eid,
+                              @RequestParam("lid") ObjectId lid) {
         Location location;
         Event event;
 
         // check if the location exists
-        if (locationRepository.findById(locationId).isPresent()) {
-            location = locationRepository.findById(locationId).get();
+        if (locationRepository.findById(lid).isPresent()) {
+            location = locationRepository.findById(lid).get();
             log.info("PLAYER: " + location);
-        } else return "A player with ID " + locationId + " does not exist";
+        } else return "A player with ID " + lid + " does not exist";
 
         // check if the event exists
-        if (eventRepository.findById(eventId).isPresent()) {
-            event = eventRepository.findById(eventId).get();
+        if (eventRepository.findById(eid).isPresent()) {
+            event = eventRepository.findById(eid).get();
             log.info("EVENT: " + event);
-        } else return "An event with ID " + eventId + " does not exist";
+        } else return "An event with ID " + eid + " does not exist";
 
         // TODO: implement the functionality of locations booking according to free time duration available
         // check if the specified event already takes place in the specified location
-        if (location.getEvents().contains(eventId))
+        if (location.getEvents().contains(eid))
             return "[" + event.getName() + "] already has the location set";
 
-        location.hostEvent(eventId);
-        event.setLocation(locationId);
+        location.hostEvent(eid);
+        event.setLocation(lid);
         locationRepository.save(location);
         eventRepository.save(event);
 
-        return "[" + eventRepository.findById(eventId).get().getName() + "] will take place in [" + locationRepository.findById(locationId).get().getName() + "]";
+        return "[" + eventRepository.findById(eid).get().getName() + "] will take place in [" + locationRepository.findById(lid).get().getName() + "]";
     }
 
     // find event by name
@@ -143,8 +152,8 @@ public class EventController {
     }
 
     // set the time for the event (time is persisted in UTC)
-    @GetMapping(value = "/update", params = {"eid", "start", "end"})
-    public String updateEventDate(@RequestParam("eid") ObjectId eid,
+    @GetMapping(value = "/update/{eid}", params = {"start", "end"})
+    public String updateEventDate(@PathVariable ObjectId eid,
                                   @RequestParam("start") String startTime,
                                   @RequestParam("end") String endTime) {
         Location location;
@@ -166,7 +175,8 @@ public class EventController {
         LocalDateTime cEndTime = LocalDateTime.parse(endTime, formatter);
 
         // check if the specified time is available (not booked yet)
-        if (!location.isBookingAvailable(cStartTime, cEndTime)) return "[" + location.getName() + "]" + " is unavailable for the specified period";
+        if (!location.isBookingAvailable(cStartTime, cEndTime))
+            return "[" + location.getName() + "]" + " is unavailable for the specified period";
 
         // everything is OK, complete the booking
         location.getBookings().add(new Booking(cStartTime, cEndTime));
